@@ -1,0 +1,49 @@
+ol#noStep{
+    counter-reset: item;
+    display: inline-block;
+    font: normal normal 20px/26px helvetica, arial, sans-serif;
+    margin: 20px;
+}
+
+li#step{
+    color: #aaa;
+    display: block;
+    float: left;
+    margin-right: 2em;
+}
+
+li#step:before {
+    content: counter(item);
+    counter-increment: item;
+    display: inline-block;
+    text-align: center;
+    /*Size of the circle */
+    line-height: 50px;
+    width: 50px;  
+    height: 50px;
+    background-color: #ccc;
+    border-radius: 50%;
+    margin-right: .5em;
+    margin-bottom: .25em;
+    color: #fff;
+    font-size: 24px; /* Number inside the circle Size */
+    font-wight: bold;
+}
+
+.selected-step-1 li#step.step-1,
+.selected-step-2 li#step.step-2,
+.selected-step-3 li#step.step-3,
+.selected-step-4 li#step.step-4,
+.selected-step-5 li#step.step-5 {
+    color: red;
+    font-weight: bold;
+}
+
+.selected-step-1 li#step.step-1:before,
+.selected-step-2 li#step.step-2:before,
+.selected-step-3 li#step.step-3:before,
+.selected-step-4 li#step.step-4:before,
+.selected-step-5 li#step.step-5:before {
+    background-color: red;
+    font-weight: bold;
+}

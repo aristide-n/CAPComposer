@@ -1,0 +1,683 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<link type="text/css" rel="stylesheet"
+	href="./css/bootstrap/css/bootstrap.css" />
+<link type="text/css" rel="stylesheet" href="./css/custom.css" />
+<style type="text/css">
+#map_canvas img {
+	max-width: none;
+}
+</style>
+<script src="./js/jquery.js"></script>
+<script
+	src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+</head>
+<body onload="initialize()">
+	<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a class="btn btn-navbar" data-toggle="collapse"
+					data-target=".nav-collapse"> <span class="icon-bar"></span> <span
+					class="icon-bar"></span> <span class="icon-bar"></span>
+				</a> <a class="brand" href="#">CAP Tool</a>
+				<div class="nav-collapse collapse">
+					<ul class="nav">
+						<li class="active"><a href="#">Home</a></li>
+						<li><a href="#about">About</a></li>
+						<li><a href="#contact">Contact</a></li>
+						<li><a href="map.jsp">Map</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<br /> <br /> <br />
+		<ol id="noStep" class="selected-step-2">
+			<li id="step" class="step-1">Alert Message</li>
+			<li id="step" class="step-2">Area</li>
+			<li id="step" class="step-3">Information</li>
+			<li id="step" class="step-4">Finish</li>
+		</ol>
+		<div class="row-fluid">
+
+			<div class="span12">
+				<div class="row-fluid">
+					<div class="span4">
+						<form onsubmit="showAddress(this.address.value); return false">
+							<div class="well">
+								<label for="address"> Address </label>
+								<div class="input">
+									<input class="span10" id="address" name="address"
+										placeholder="Broadway ave, Manhattan" value="" type="text" />
+								</div>
+								<!-- TODO: Make the below an input tag instead  -->
+								<button id="map-refresh" type="submit" class="btn btn-primary">
+									<em class="icon-search icon-white"></em>&nbsp;Search
+								</button>
+							</div>
+						</form>
+						<form id="tools" action="./" method="post" onsubmit="return false">
+							<div class="well">
+								<label for="shape_type"> Area Shape </label> <select
+									id="toolchoice" name="toolchoice"
+									onchange="toolID=parseInt(this.options[this.selectedIndex].value)">
+									<option selected="selected" value="1">Polygon</option>
+									<option value="2">Circle</option>
+								</select>
+							</div>
+						</form>
+						<div class="well">
+							<!-- TODO: Make the below a button tag instead  -->
+							<input onclick="deleteOverlays();" type=button value="Clear Map"
+								class="btn btn-primary">
+						</div>
+						<form name="areaForm" id="areaForm" action="" method="post">
+							<table>
+								<tr>
+									<td align="left"><button id = "backBtn" type="submit"
+											class="btn btn-primary btn-small" name="backAlert">Back</button></td>
+									<td align="right"><button id = "nextBtn" type="submit"
+											class="btn btn-primary btn-small" name="nextInfo">Next</button></td>
+								</tr>
+							</table>
+						</form>
+						<!-- TODO: Remove test divs -->
+						<div id="test"></div>
+						<div id="test_1"></div>
+					</div>
+					<div class="span8">
+						<div
+							style="display: inline-block; position: relative; width: 100%">
+							<div style="margin-top: 75%">
+								<div id="map_canvas"
+									style="position: absolute; top: 0; bottom: 0; left: 0; right: 0"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		var map;
+		var geocoder; // = new google.maps.Geocoder();
+		var markers = [];
+
+		// Either circle or polygon
+		var toolID = 1;
+
+		// Circle variables
+		var centerMarker;
+		var initialRadius;
+		
+		var centerPoint;
+		var radiusPoint;
+		var circleOptions; // init here
+		var circles = [];
+		var currentCircle;
+
+		// Polygon variables
+		var polygonOptions; // init here
+		var polyPoints = []; // Array of latLng objects defined in the google maps library.
+		// It saves the vertices of a polygon that is being edited.    
+		var polygons = []; // arrray of Polygon objects defined in the google maps ibrary
+		var polygonPaths;
+		var areaJSON;
+		var curPolygon; // current // This variable holds a polygon that is being edited
+		var timeout;
+		var closePoly;
+
+		// Setup the map.
+		function initialize() {
+			var mapOptions = {
+				center : new google.maps.LatLng(37.4106, -122.0596),
+				zoom : 8,
+				draggable : true,
+				draggingCursor : 'pointer',
+				scaleControl : true,
+				mapTypeControl : true,
+				disableDoubleClickZoom : true,
+				streetViewControl : false,
+
+				mapTypeId : google.maps.MapTypeId.HYBRID
+			// take out street view
+			};
+			map = new google.maps.Map(document.getElementById("map_canvas"),
+					mapOptions); //keep
+
+			// Initializethe geocoder.
+			geocoder = new google.maps.Geocoder();
+
+			// Initialize the circle options 
+			circleOptions = {
+				strokeColor : "#FF0000",
+				strokeOpacity : 0.8,
+				strokeWeight : 2,
+				fillColor : "#FF0000",
+				fillOpacity : 0.35,
+				map : map
+			};
+
+			// Initialize the polygon options 
+			polygonOptions = {
+				strokeColor : "#FF0000",
+				strokeOpacity : 0.8,
+				strokeWeight : 2,
+				fillColor : "#FF0000",
+				fillOpacity : 0.35,
+				map : map
+			};
+
+			// Initialize the event listeners
+			google.maps.event.addListener(map, 'click', function(event) {
+				if (toolID == 2) {
+					clearTimeout(timeout);
+
+					if (radiusPoint) {
+						centerPoint = null;
+						//currentCircle = null;
+						radiusPoint = null;
+		                // Circle is selected
+		                //currentCircle = new google.maps.Circle(circleOptions);
+		               // circles.push(currentCircle);
+		                addToCircle(event.latLng);
+
+		                // Make sure to lock any previous polygon 
+		                polyPoints = [];
+		                curPolygon = null;
+					} else if (currentCircle) {
+						addToCircle(event.latLng);
+					} else {
+		                // Circle is selected
+		                //currentCircle = new google.maps.Circle(circleOptions);
+		               // circles.push(currentCircle);
+		                addToCircle(event.latLng);
+
+		                // Make sure to lock any previous polygon 
+		                polyPoints = [];
+		                curPolygon = null;
+					}
+				} else if ((toolID == 1) && (polyPoints.length >= 3)) {
+					timeout = setTimeout(addMarker, 200, event);
+				} else {
+					addMarker(event);
+				}
+			}); // keep 
+			google.maps.event.addListener(map, 'dblclick', function(event) {
+				if (timeout) {
+					clearTimeout(timeout);
+					addMarker(event);
+					polyPoints = [];
+					curPolygon = null;
+				}
+			});
+
+			google.maps.event.addListener(map, 'mousedown', function(event) {
+				if ((toolID == 2) && centerPoint) {
+					timeout = setTimeout(addToCircle, 200, event.latLng);
+				}
+			});
+
+			/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  */
+			//var distanceWidget = new DistanceWidget(map);
+
+			/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  */
+
+			restoreAreas();
+		}
+
+		// Add overlays at the cursor position when the map is clicked.
+		function addMarker(event) {
+			// Add a marker to the map position and push it to the array of markers.
+			marker = new google.maps.Marker({
+				position : event.latLng,
+				map : map
+			});
+			markers.push(marker);
+
+			// Add the marker to a shape
+			if (toolID == 1) {
+				// Polygon is selected
+				addToPolygon(event.latLng);
+
+			}
+		}
+
+		// Adds a map position as the vertex of a polygon
+		function addToPolygon(position) {
+			// Add the position to the array of polygon points
+			if (polyPoints.length > 0) {
+				closingPoint = polyPoints.pop();
+				polyPoints.push(position);
+				polyPoints.push(closingPoint);
+				// If the array has 3 or more vertices, draw a polygon
+				if (polyPoints.length > 3)
+					drawPolygon();
+			}
+			/* Add the first position in the array of polygon points. It is the first and the
+			 last element of the array. */
+			else {
+				polyPoints.push(position);
+				polyPoints.push(position);
+			}
+		}
+
+		// Draws a polygon overlay on the map.
+		function drawPolygon() {
+			// Change the path of the existing current polygon
+			if (curPolygon) {
+				curPolygon.setPath(polyPoints);
+			}
+			// Create a new current polygon
+			else {
+				curPolygon = new google.maps.Polygon(polygonOptions);
+				curPolygon.setPath(polyPoints);
+
+				polygons.push(curPolygon);
+			}
+		}
+
+		// Adds a map position as the center or the radius point of a circle
+		function addToCircle(position) {		
+			
+			if (centerPoint) {
+				radiusPoint = position;
+				drawCircle();
+			} else {
+				centerPoint = position;
+				centerMarker = new google.maps.Marker({
+					map : map,
+					position : centerPoint,
+	                draggable : true,
+	                title : 'Move me!'
+	            });
+	            markers.push(centerMarker);
+			}
+		}
+
+		// Draws a circle overlay on the map.
+		function drawCircle() {
+            initialRadius = distance(centerPoint.lat(), centerPoint.lng(), radiusPoint
+                    .lat(), radiusPoint.lng());
+            var testDW = new DistanceWidget(map);
+		}
+		
+		// Calculates the distance between two coordinates.
+		function distance(lat1, lon1, lat2, lon2) { // experiment with basic calculation
+			var R = 6371000; // earth's radius in meters
+			var dLat = (lat2 - lat1) * Math.PI / 180;
+			var dLon = (lon2 - lon1) * Math.PI / 180;
+			var a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+					+ Math.cos(lat1 * Math.PI / 180)
+					* Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2)
+					* Math.sin(dLon / 2);
+			var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+			var d = R * c;
+			return d;
+		}
+
+		/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  */
+
+        
+        /**
+         * A distance widget that will display a circle that can be resized and will
+         * provide the radius in km.
+         *
+         * @param {google.maps.Map} map The map on which to attach the distance widget.
+         *
+         * @constructor
+         */
+        function DistanceWidget(map) {
+            this.set('map', map);
+            this.set('position', centerPoint);
+
+            var marker = new google.maps.Marker({
+                draggable : true,
+                title : 'Move me!'
+            });
+            //
+            //markers.pop().setMap(null);
+            
+            markers.push(marker);
+            
+            // Bind the marker map property to the DistanceWidget map property
+            marker.bindTo('map', this);
+
+            // Bind the marker position property to the DistanceWidget position
+            // property
+            marker.bindTo('position', this);
+
+            // Create a new radius widget
+            var radiusWidget = new RadiusWidget();
+
+            // Bind the radiusWidget map to the DistanceWidget map
+            radiusWidget.bindTo('map', this);
+
+            // Bind the radiusWidget center to the DistanceWidget position
+            radiusWidget.bindTo('center', this, 'position');
+            
+            // Bind to the radiusWidgets' distance property
+            this.bindTo('distance', radiusWidget);
+
+            // Bind to the radiusWidgets' bounds property
+            this.bindTo('bounds', radiusWidget);
+        }
+        DistanceWidget.prototype = new google.maps.MVCObject();
+
+		/**
+		 * A radius widget that add a circle to a map and centers on a marker.
+		 *
+		 * @constructor
+		 */
+		function RadiusWidget() {
+			var circle = new google.maps.Circle({
+                strokeColor : "#FF0000",
+                strokeOpacity : 0.8,
+                strokeWeight : 2,
+                fillColor : "#FF0000",
+                fillOpacity : 0.35,
+			});
+			circles.push(circle);
+
+			// Set the distance property value, default to 50km.
+			this.set('distance', initialRadius);
+
+			// Bind the RadiusWidget bounds property to the circle bounds property.
+			this.bindTo('bounds', circle);
+
+			// Bind the circle center to the RadiusWidget center property
+			circle.bindTo('center', this);
+
+			// Bind the circle map to the RadiusWidget map
+			circle.bindTo('map', this);
+
+			// Bind the circle radius property to the RadiusWidget radius property
+			circle.bindTo('radius', this);
+
+			//
+			this.addSizer_();
+		}
+		RadiusWidget.prototype = new google.maps.MVCObject();
+
+		/**
+		 * Update the radius when the distance has changed.
+		 */
+		RadiusWidget.prototype.distance_changed = function() {
+			this.set('radius', this.get('distance'));
+		};
+
+		/**
+		 * Add the sizer marker to the map.
+		 *
+		 * @private
+		 */
+		RadiusWidget.prototype.addSizer_ = function() {
+			var sizer = new google.maps.Marker({
+				draggable : true,
+				title : 'Drag me!'
+			});
+			markers.push(sizer);
+
+			sizer.bindTo('map', this);
+			sizer.bindTo('position', this, 'sizer_position');
+			
+			var me = this;
+			google.maps.event.addListener(sizer, 'drag', function() {
+			  // Set the circle distance (radius)
+			  me.setDistance();
+			});
+		};
+
+		/**
+		 * Update the center of the circle and position the sizer back on the line.
+		 *
+		 * Position is bound to the DistanceWidget so this is expected to change when
+		 * the position of the distance widget is changed.
+		 */
+		RadiusWidget.prototype.center_changed = function() {
+			var bounds = this.get('bounds');
+
+			// Bounds might not always be set so check that it exists first.
+			if (bounds) {
+				var lng = bounds.getNorthEast().lng();
+
+				// Put the sizer at center, right on the circle.
+				var position = new google.maps.LatLng(this.get('center').lat(),
+						lng);
+				this.set('sizer_position', position);
+			}
+		};
+
+		/**
+		 * Calculates the distance between two latlng locations in km.
+		 * @see http://www.movable-type.co.uk/scripts/latlong.html
+		 *
+		 * @param {google.maps.LatLng} p1 The first lat lng point.
+		 * @param {google.maps.LatLng} p2 The second lat lng point.
+		 * @return {number} The distance between the two points in km.
+		 * @private
+		 */
+		RadiusWidget.prototype.distanceBetweenPoints_ = function(p1, p2) {
+			if (!p1 || !p2) {
+				return 0;
+			}
+
+			var R = 6371000; // Radius of the Earth in km
+			var dLat = (p2.lat() - p1.lat()) * Math.PI / 180;
+			var dLon = (p2.lng() - p1.lng()) * Math.PI / 180;
+			var a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+					+ Math.cos(p1.lat() * Math.PI / 180)
+					* Math.cos(p2.lat() * Math.PI / 180) * Math.sin(dLon / 2)
+					* Math.sin(dLon / 2);
+			var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+			var d = R * c;
+			return d;
+		};
+
+		/**
+		 * Set the distance of the circle based on the position of the sizer.
+		 */
+		RadiusWidget.prototype.setDistance = function() {
+			// As the sizer is being dragged, its position changes.  Because the
+			// RadiusWidget's sizer_position is bound to the sizer's position, it will
+			// change as well.
+			var pos = this.get('sizer_position');
+			var center = this.get('center');
+			var distance = this.distanceBetweenPoints_(center, pos);
+
+			// Set the distance property for any objects that are bound to it
+			this.set('distance', distance);
+		};
+		/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  */
+
+		// Deletes all overlays.
+		function deleteOverlays() {
+			// Delete all markers in the markers array by removing references to them.
+			if (markers) {
+				for (i in markers) {
+					markers[i].setMap(null);
+				}
+				markers = [];
+			}
+			/* Delete all circles in the circles array by removing references to them,
+			 and clear all the relevant circles vars. */
+			if (circles) {
+				for (i in circles) {
+					circles[i].setMap(null);
+				}
+				circles = [];
+				centerPoint = null;
+			}
+			// Delete all polygons in the polygons array by removing references to them.
+			if (polygons) {
+				for (i in polygons) {
+					polygons[i].setMap(null);
+				}
+				polygons = [];
+				polyPoints = [];
+				curPolygon = null;
+			}
+		}
+
+		// Centers the map to the address input.
+		function showAddress(address) {
+			geocoder
+					.geocode(
+							{
+								'address' : address
+							},
+							function(results, status) {
+								if (status == google.maps.GeocoderStatus.OK) {
+									var pos = results[0].geometry.location;
+									map.setCenter(pos);
+									map.setZoom(12);
+								} else {
+									alert("Geocode was not successful for the following reason: "
+											+ status);
+								}
+							});
+		}
+
+		// What is the next page
+		$(function() {
+			$('#backBtn').click(
+					function() {
+						debugger
+        			$("#areaForm").attr('action','./alert.html')
+					});
+					
+			$('#nextBtn').click(
+					function() {
+						debugger
+        			$("#areaForm").attr('action','./info.html')
+					});
+		});
+
+		
+		
+		// PERSIST THE AREA DATA
+		$(function() {
+			$('#areaForm').submit(
+					function() {
+						debugger
+						var submitDirection = 
+						
+						window.localStorage.setItem("polygonAreas", JSON
+								.stringify(serializePolygons()));
+						window.localStorage.setItem("circleAreas", JSON
+								.stringify(serializeCircles()));
+					});
+		});
+
+		function serializePolygons() {
+			var serPolygonPaths = [];
+			var onePolygonPath = [];
+
+			if (polygons != []) {
+				for ( var i = 0; i < polygons.length; i++) {
+					polygonPath = polygons[i].getPath().getArray();
+					onePolygonPath = [];
+
+					for ( var j = 0; j < polygonPath.length; j++) {
+						onePolygonPath.push(polygonPath[j].lat());
+						onePolygonPath.push(polygonPath[j].lng());
+					}
+
+					serPolygonPaths.push(onePolygonPath);
+				}
+			}
+			return serPolygonPaths;
+		}
+
+		function serializeCircles() {
+			serCircles = [];
+
+			debugger
+			if (circles != []) {
+				for ( var i = 0; i < circles.length; i++) {
+					serCircles.push(circles[i].getCenter().lat());
+					serCircles.push(circles[i].getCenter().lng());
+					serCircles.push(circles[i].getRadius());
+				}
+			}
+			return serCircles;
+		}
+
+		function restoreAreas() {
+			var polygonAreasJSON = localStorage.getItem('polygonAreas');
+			debugger;
+			if (polygonAreasJSON != null) {
+				polygonAreas = JSON.parse(polygonAreasJSON);
+				restorePolygons(polygonAreas);
+			}
+
+			var circleAreasJSON = localStorage.getItem('circleAreas');
+			if (circleAreasJSON != null) {
+				circleAreas = JSON.parse(circleAreasJSON);
+				restoreCircles(circleAreas);
+			}
+		}
+
+		function restorePolygons(polygonPaths) {
+			debugger
+			for ( var i = 0; i < polygonPaths.length; i++) {
+				onePolygonPathPoints = polygonPaths[i];
+				onePolygonPath = [];
+
+				for ( var j = 0; j < onePolygonPathPoints.length; j += 2) {
+					onePolygonPath.push(new google.maps.LatLng(
+							onePolygonPathPoints[j],
+							onePolygonPathPoints[j + 1]))
+
+					// Add a marker to the map position and push it to the array of markers.
+					marker = new google.maps.Marker({
+						position : new google.maps.LatLng(
+								onePolygonPathPoints[j],
+								onePolygonPathPoints[j + 1]),
+						map : map
+					});
+					markers.push(marker);
+				}
+
+				polygon = new google.maps.Polygon(polygonOptions);
+				polygon.setPath(onePolygonPath);
+				polygons.push(polygon);
+			}
+		}
+
+		function restoreCircles(circleAreas) {
+			debugger
+			for ( var i = 0; i < circleAreas.length; i += 3) {
+				oneCircleArea = circleAreas[i];
+				onePolygonPath = [];
+
+				// Add a marker to the center position and push it to the array of markers.
+				marker = new google.maps.Marker({
+					position : new google.maps.LatLng(circleAreas[i],
+							circleAreas[i + 1]),
+					map : map
+				});
+				markers.push(marker);
+
+				circle = new google.maps.Circle(circleOptions);
+				circle.setCenter(new google.maps.LatLng(circleAreas[i],
+						circleAreas[i + 1]));
+				circle.setRadius(circleAreas[i + 2]);
+				circles.push(circle);
+			}
+		}
+
+		// UTILITY FUNCTIONS
+		// Get a JS object or a DOM element object
+		function getObject(e) {
+			if (typeof (e) == 'object')
+				return (e);
+			if (document.getElementById)
+				return (document.getElementById(e));
+			return (eval(e))
+		}
+	</script>
+</body>
+</html>
