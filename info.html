@@ -1,135 +1,472 @@
 <html>
-  <head>
-  <link type="text/css" rel="stylesheet" href="./css/bootstrap/css/bootstrap.css" />
-    <link type="text/css" rel="stylesheet" href="./css/datepicker.css" />
-    <link type="text/css" rel="stylesheet" href="./css/timepicker.css" />
-    <link type="text/css" rel="stylesheet" href="./css/custom.css" />
-    <script src="./js/jquery.js"></script>
-    <script src="./js/bootstrap-timepicker.js"></script>
-    <script src="./js/bootstrap-datepicker.js"></script>
-    <script src="./js/manipulation.js"></script>
-  </head>
+<head>
+<style>
+	/* 
+div				{	padding: 10px; 
+						width: 680px }
+ */
+	.info_header	{	padding: 10px; background-color: #fee2e2 }
+	.info_body		{	padding: 10px; background-color: #fef0e2 }
+	.TEMP_label			{	font-family: arial, verdana, sans-serif;
+						font-variant: small-caps;
+						font-size: smaller;
+						font-weight: bold}
+	.optional		{	color: gray }
+</style>
+
+<link type="text/css" rel="stylesheet"
+	href="./css/bootstrap/css/bootstrap.css" />
+<link type="text/css" rel="stylesheet" href="./css/datepicker.css" />
+<link type="text/css" rel="stylesheet" href="./css/timepicker.css" />
+<link type="text/css" rel="stylesheet" href="./css/custom.css" />
+<script src="./js/jquery.js"></script>
+<script src="./js/bootstrap-timepicker.js"></script>
+<script src="./js/bootstrap-datepicker.js"></script>
+<script src="./js/manipulation.js"></script>
+</head>
 <body>
 
-   <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="#">CAP Tool</a>
-          <div class="nav-collapse collapse">
-            <ul class="nav">
-              <li class="active"><a href="#">Home</a></li>
-              <li><a href="#about">About</a></li>
-              <li><a href="#contact">Contact</a></li>
-            </ul>
-          </div><!--/.nav-collapse -->
-        </div>
-      </div>
-    </div>
-<div class="container" id="mainContainer">
-              <div id="t2">
-              <h4 class="expanderHead" id="eh" data-index=0 style="cursor:pointer;">Information
-			 <span class="expanderSign">+</span>
-			  </h4>
-			  <div class="expanderContent" id="ec" data-index=0 style="display:none">
-              <table>
-              <tr><td>Language &nbsp</td><td><select name="language" class="language"><option>en-US</option></td></tr>
-              <tr><td>Category</td><td><select name="category" class="category"><option>Geo</option><option>Met</option><option>Safety</option><option>Security</option><option>Rescue</option><option>Fire</option><option>Health</option><option>Env</option><option>Transport</option><option>Infra</option><option>CBRNE</option><option>Other</option></td></tr>
-              <tr><td>Event</td><td><input class="input-large event" type="text" name="event" /></td></tr>
-              <tr><td>Response Type</td><td><select name="responseType" class="responseType" ><option>Shelter</option><option>Evacuate</option><option>Prepare</option><option>Execute</option><option>Avoid</option><option>Monitor</option><option>Assess</option><option>AllClear</option><option>None</option></td></tr>
-              <tr><td>Urgency</td><td><select name="urgency" class="urgency"><option>Immediate</option><option>Expected</option><option>Future</option><option>Past</option><option>Unknown</option></td></tr>
-              <tr><td>Severity</td><td><select name="severity" class="severity"><option>Extreme</option><option>Sever</option><option>Moderate</option><option>Minor</option><option>Unknown</option></td></tr>
-              <tr><td>Certainty</td><td><select name="certainty" class="certainty"><option>Observed</option><option>Likely(p > ~50%)</option><option>Possible(p <= ~50%)</option><option>Unlikely</option><option>Unknown</option></td></tr>
-              <tr><td>Event Code</td><td><input class="input-large eventCode" type="text" name="eventCode"/></td></tr>
-		      
-              <tr><td>Sender Name</td><td><input class="input-large senderName" type="text" name="senderName"/></td></tr>
-              <tr><td>Headline</td><td><input class="input-large headline" type="text" name="headline"/></td></tr>
-              <tr><td>Description</td><td><input class="input-large description" type="text" name="description"/></td></tr>
-              <tr><td>Instruction</td><td><input class="input-large instruction" type="text" name="instruction"/></td></tr>
-              <tr><td>Web</td><td><input class="input-large web" type="text" name="web"/></td></tr>
-              <tr><td>Contact</td><td><input class="input-large contact" type="text" name="contact"/></td></tr>
-              </table>
-               <div id="resourceList">
-               <input class="input-large" type="hidden" name="count" id="count" value="1"/>
-		<div id="resource" class="resourceEntry">
-			<h4 class="resourceExpanderHead" id="reh" data-index=0 style="cursor:pointer;">
-			Resource <span class="expanderSign">+</span>
-			</h4>
-			<div class="resourceExpanderContent" id="rec" data-index=0 style="display:none">
-				<table>
-					<tr><td>Resource Description &nbsp</td><td><input class="input-large" type="text" name="resource"/></td></tr>
-					<tr><td>URI &nbsp</td><td><input class="input-large" type="text" name="uri"/></td></tr>
-				</table>
+	<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a class="btn btn-navbar" data-toggle="collapse"
+					data-target=".nav-collapse"> <span class="icon-bar"></span> <span
+					class="icon-bar"></span> <span class="icon-bar"></span>
+				</a> <a class="brand" href="#">CAP Tool</a>
+				<div class="nav-collapse collapse">
+					<ul class="nav">
+						<li class="active"><a href="#">Home</a></li>
+						<li><a href="#about">About</a></li>
+						<li><a href="#contact">Contact</a></li>
+					</ul>
+				</div>
+				<!--/.nav-collapse -->
 			</div>
 		</div>
-	   </div>
-	   <button data-index=0 class="btn btn-info btn-small arb" type="button">Add another Resource block</button>
-              
-              
-              </div>
-              </div>
-              <br/>
-<ol id="noStep" class="selected-step-3">
-	<li id="step" class="step-1">Alert Message</li>
-	<li id="step" class="step-2">Area </li>
-	<li id="step" class="step-3">Information</li>
-	<li id="step" class="step-4">Finish</li>
-</ol>
-<form name="infoForm" id="infoForm" action="" method="post">
-<div id="listInfo">
- <div id="t1">
-	<h4 class="expanderHead well" id="eh0" data-index=0 style="cursor:pointer;">
-	Information 1 <script></script> <span class="expanderSign"><i class="icon-plus-sign"></i></span>
-	</h4>
- 	<div class="expanderContent" id="ec0" data-index=0 style="display:none">
-	   <table>
-	   <tr><td>Language &nbsp</td><td><select name="language"  class="language"><option>en-US</option></td></tr>
-	   <tr><td>Category</td><td><select name="category" class="category"><option>Geo</option><option>Met</option><option>Safety</option><option>Security</option><option>Rescue</option><option>Fire</option><option>Health</option><option>Env</option><option>Transport</option><option>Infra</option><option>CBRNE</option><option>Other</option></td></tr>
-	   <tr><td>Event</td><td><input class="input-large event" type="text" name="event" /></td></tr>
-	   <tr><td>Response Type</td><td><select name="responseType" class="responseType"><option>Shelter</option><option>Evacuate</option><option>Prepare</option><option>Execute</option><option>Avoid</option><option>Monitor</option><option>Assess</option><option>AllClear</option><option>None</option></td></tr> 
-	   <tr><td>Urgency</td><td><select name="urgency" class="urgency"><option>Immediate</option><option>Expected</option><option>Future</option><option>Past</option><option>Unknown</option></td></tr>
-	   <tr><td>Severity</td><td><select name="severity" class="severity"><option>Extreme</option><option>Sever</option><option>Moderate</option><option>Minor</option><option>Unknown</option></td></tr>
-	   <tr><td>Certainty</td><td><select name="certainty" class="certainty"><option>Observed</option><option>Likely(p > ~50%)</option><option>Possible(p <= ~50%)</option><option>Unlikely</option><option>Unknown</option></td></tr>
-	   <tr><td>Event Code</td><td><input class="input-large eventCode" type="text" name="eventCode"/></td></tr>
-	   <tr><td>Sender Name</td><td><input class="input-large senderName" type="text" name="senderName"/></td></tr>
-	   <tr><td>Headline</td><td><input class="input-large headline" type="text" name="headline"/></td></tr>
-	   <tr><td>Description</td><td><input class="input-large description" type="text" name="description"/></td></tr>
-	   <tr><td>Instruction</td><td><input class="input-large instruction" type="text" name="instruction"/></td></tr>
-	   <tr><td>Web</td><td><input class="input-large web" type="text" name="web"/></td></tr>
-	   <tr><td>Contact</td><td><input class="input-large contact" type="text" name="contact"/></td></tr>
-	   </table>
-	   
-	   <div id="resourceList0" class="hero">
-	    <input type="hidden" name="count" id="count0" value="1"/>
-		<div id="resource0" class="resourceEntry">
-			<h4 class="resourceExpanderHead well" id="reh0" data-index=0 style="cursor:pointer;">
-			Resource <span class="expanderSign"><i class="icon-plus-sign"></i></span>
+	</div>
+	<div class="container" id="mainContainer">
+		<div id="t2">
+			<h4 class="expanderHead" id="eh" data-index=0
+				style="cursor: pointer;">
+				Information <span class="expanderSign">+</span>
 			</h4>
-			<div class="resourceExpanderContent" id="rec0" data-index=0 style="display:none">
+			<div class="expanderContent" id="ec" data-index=0
+				style="display: none">
 				<table>
-					<tr><td>Resource Description &nbsp</td><td><input class="input-large" type="text" name="resource"/></td></tr>
-					<tr><td>URI &nbsp</td><td><input class="input-large" type="text" name="uri"/></td></tr>
+					<tr>
+						<td>Language &nbsp</td>
+						<td><select name="language" class="language"><option>en-US</option></td>
+					</tr>
+					<tr>
+						<td>Category</td>
+						<td><select name="category" class="category"><option>Geo</option>
+								<option>Met</option>
+								<option>Safety</option>
+								<option>Security</option>
+								<option>Rescue</option>
+								<option>Fire</option>
+								<option>Health</option>
+								<option>Env</option>
+								<option>Transport</option>
+								<option>Infra</option>
+								<option>CBRNE</option>
+								<option>Other</option></td>
+					</tr>
+					<tr>
+						<td>Event</td>
+						<td><input class="input-large event" type="text" name="event" /></td>
+					</tr>
+					<tr>
+						<td>Response Type</td>
+						<td><select name="responseType" class="responseType"><option>Shelter</option>
+								<option>Evacuate</option>
+								<option>Prepare</option>
+								<option>Execute</option>
+								<option>Avoid</option>
+								<option>Monitor</option>
+								<option>Assess</option>
+								<option>AllClear</option>
+								<option>None</option></td>
+					</tr>
+					<tr>
+						<td>Urgency</td>
+						<td><select name="urgency" class="urgency"><option>Immediate</option>
+								<option>Expected</option>
+								<option>Future</option>
+								<option>Past</option>
+								<option>Unknown</option></td>
+					</tr>
+					<tr>
+						<td>Severity</td>
+						<td><select name="severity" class="severity"><option>Extreme</option>
+								<option>Sever</option>
+								<option>Moderate</option>
+								<option>Minor</option>
+								<option>Unknown</option></td>
+					</tr>
+					<tr>
+						<td>Certainty</td>
+						<td><select name="certainty" class="certainty"><option>Observed</option>
+								<option>Likely(p > ~50%)</option>
+								<option>Possible(p <= ~50%)</option>
+								<option>Unlikely</option>
+								<option>Unknown</option></td>
+					</tr>
+					<tr>
+						<td>Event Code</td>
+						<td><input class="input-large eventCode" type="text"
+							name="eventCode" /></td>
+					</tr>
+
+					<tr>
+						<td>Sender Name</td>
+						<td><input class="input-large senderName" type="text"
+							name="senderName" /></td>
+					</tr>
+					<tr>
+						<td>Headline</td>
+						<td><input class="input-large headline" type="text"
+							name="headline" /></td>
+					</tr>
+					<tr>
+						<td>Description</td>
+						<td><input class="input-large description" type="text"
+							name="description" /></td>
+					</tr>
+					<tr>
+						<td>Instruction</td>
+						<td><input class="input-large instruction" type="text"
+							name="instruction" /></td>
+					</tr>
+					<tr>
+						<td>Web</td>
+						<td><input class="input-large web" type="text" name="web" /></td>
+					</tr>
+					<tr>
+						<td>Contact</td>
+						<td><input class="input-large contact" type="text"
+							name="contact" /></td>
+					</tr>
 				</table>
+				<div id="resourceList">
+					<input class="input-large" type="hidden" name="count" id="count"
+						value="1" />
+					<div id="resource" class="resourceEntry">
+						<h4 class="resourceExpanderHead" id="reh" data-index=0
+							style="cursor: pointer;">
+							Resource <span class="expanderSign">+</span>
+						</h4>
+						<div class="resourceExpanderContent" id="rec" data-index=0
+							style="display: none">
+							<table>
+								<tr>
+									<td>Resource Description &nbsp</td>
+									<td><input class="input-large" type="text" name="resource" /></td>
+								</tr>
+								<tr>
+									<td>URI &nbsp</td>
+									<td><input class="input-large" type="text" name="uri" /></td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
+				<button data-index=0 class="btn btn-info btn-small arb"
+					type="button">Add another Resource block</button>
+
+
 			</div>
 		</div>
-	   </div>
-	   
-	   <button data-index=0 class="btn btn-info btn-small arb" type="button">+ Resource block</button>
-  	</div>
- </div>
-</div>
-<button onclick="addBlock();return false;" class="btn btn-info btn-small" type="button">+ Information</button> <br/>
-<table>
-	<tr>
-		<td align="left"><button id="backBtn" type="submit" class="btn btn-primary btn-small" name="backMap">Back</button></td>
-		<td align="right"><button id="nextBtn" type="submit" class="btn btn-primary btn-small" name="nextFinish">Next</button></td>
-	</tr>
-</table>
-</form>
-</div> <!-- Main Containers Div End -->
+		<br />
+		<ol id="noStep" class="selected-step-3">
+			<li id="step" class="step-1">Alert Message</li>
+			<li id="step" class="step-2">Area</li>
+			<li id="step" class="step-3">Information</li>
+			<li id="step" class="step-4">Finish</li>
+		</ol>
+		<form name="infoForm" id="infoForm" action="" method="post">
+			<div id="listInfo">
+				<div id="t1">
+					<h4 class="expanderHead well" id="eh0" data-index=0
+						style="cursor: pointer;">
+						Information 1
+						<script></script>
+						<span class="expanderSign"><i class="icon-plus-sign"></i></span>
+					</h4>
+					<div class="expanderContent" id="ec0" data-index=0>
+						<div id="hearderFields" class="info_header">
+								
+							<div class="row">
+								<div class="span TEMP_label">
+									<label>How Soon:</label>
+								</div>
+								<div class="span">
+									<select name="urgency" class="span urgency">
+										<option value="Immediate">Immediately</option>
+										<option value="Expected">In next hour</option>
+										<option value="Future">In near future</option>
+										<option value="Past">Has already occurred</option>
+										<option value="Unknown">Unknown</option>
+									</select>
+								</div>
+								<div class="span TEMP_label">
+									<label>How Severe:</label>
+								</div>
+								<div class="span">
+									<select name="severity" class="span severity">
+										<option value="Extreme">Extraordinary</option>
+										<option value="Severe">Significant threat</option>
+										<option value="Moderate">Possible threat</option>
+										<option value="Minor">Limited thread</option>
+										<option value="Unknown">Uncertain</option>
+									</select>
+								</div>
+								<div class="span TEMP_label">
+									<label>How Likely:</label>
+								</div>
+								<div class="span2">
+									<select name="certainty" class="span2 certainty">
+										<option value="Observed">Definite</option>
+										<option value="Likely">More than 50/50</option>
+										<option value="Possible">Less than 50/50</option>
+										<option value="Unlikely">Unlikely</option>
+										<option value="Unknown">Unknown</option>
+									</select>
+								</div>
+							</div>
+								
+							<div class="row">
+								<div class="span TEMP_label">
+									<label>Hazard Category:</label>
+								</div>
+								<div class="span6">
+									<select name="category" class="span6 category">
+										<option value="Geo">Earthquake, tsunami, volcano, landslide, other geophysical</option>
+										<option value="Met">Storm or other severe weather</option>
+										<option value="Safety">General public safety</option>
+										<option value="Security">Law enforcement, military, private security</option>
+										<option value="Rescue">Rescue and recovery</option>
+										<option value="Fire">Fire suppression</option>
+										<option value="Health">Public health and medical</option>
+										<option value="Env">Pollution, other environmental</option>
+										<option value="Transport">Transportation</option>
+										<option value="Infra">Utilities, telecom, other non-transport infrastructure</option>
+										<option value="CBRNE">Chemical, biological, radiological, explosive</option>
+										<option value="Other">Unspecified Hazard</option>
+									</select>
+								</div>
+							</div>
+								
+							<div class="row">
+								<div class="span TEMP_label">
+									<label>Recommended Action:</label>
+								</div>
+								<div class="span">
+									<select name="responseType" class="span responseType">
+										<option value="Shelter">Shelter in place</option>
+										<option value="Evacuate">Evacuate now</option>
+										<option value="Prepare">Make preparations</option>
+										<option value="Execute">Execute plan</option>
+										<option value="Avoid">Avoid the area</option>
+										<option value="Monitor">Monitor the situation</option>
+										<option value="Assess">Assess situation and report (not for public warning)</option>
+										<option value="AllClear">Resume normal activities</option>
+										<option value="None">No protective action is recommended</option>
+									</select>
+								</div>
+								
+								<div class="span TEMP_label">
+									<label>For next:</label>
+								</div>
+								<div class="span">
+									<select name="duration" class="span duration">
+										<option value="15">Fifteen minutes</option>
+										<option value="30">Thirty minutes</option>
+										<option value="60" selected>One Hour</option>
+										<option value="120">Two Hours</option>
+										<option value="180">Three Hours</option>
+										<option value="240">Four Hours</option>
+										<option value="300">Five Hours</option>
+										<option value="360">Six Hours</option>
+									</select>
+								</div>
+							</div>
+						</div>
+							
+						<div id="bodyFields" class="info_body">
+							<div class="row">
+								<div class="span TEMP_label">
+									<label>Language:</label>
+								</div>
+								<div class="span">
+									<select name="language" class="span language">
+										<option value="en-US">US English</option>
+										<option value="es">Spanish</option>
+										<option value="fr">French</option>
+										<option value="nl">Dutch</option>
+										<option value="pap">Papiamento</option>
+									</select>
+								</div>
+							</div>
+							
+							<div class="row">
+								<div class="span TEMP_label">
+									<label>Type of Hazard:</label>
+								</div>
+								<div class="span6">
+									<input class="span6 input-large event" type="text" name="event" size="60"/>
+								</div>
+								<div class="span TEMP_label optional">
+									<label>Code (opt.):</label>
+								</div>
+								<div class="span1">
+									<input class="span1 input-large eventCode" type="text" name="eventCode" size="8"/>
+								</div>
+							</div>
+							
+							<div class="row">
+								<div class="span TEMP_label">
+									<label>Issuing Agency:</label>
+								</div>
+								<div class="span6">
+									<input class="span6 input-large senderName" type="text" name="senderName" size="72"/>
+								</div>
+							</div>
+							
+							<div class="row">
+								<div class="span TEMP_label">
+									<label>Short Text Message:</label>
+								</div>
+							</div>
+							<div class="row">
+								<div class="span9">
+									<textarea rows="2" cols="72" maxlength="140" class="span9 textarea-large headline" type="text" name="headline"></textarea>
+								</div>
+							</div>
+							
+							<div class="row">
+								 <div class="span TEMP_label">
+									<label>Description of Hazard:</label>
+								 </div>
+							</div>
+							<div class="row">
+								<div class="span9">
+									<textarea rows="5" cols="72" class="span9 textarea-large description" type="text" name="description"></textarea>
+								</div>
+							</div>
+							
+							<div class="row">
+								<div class="span TEMP_label">
+									<label>Description of Area At Risk:</label>
+								</div>
+							</div>
+							<div class="row">
+								<div class="span9">
+									<textarea rows="2" cols="72" class="span9 textarea-large description" type="text" name="areaDesc"></textarea>
+								</div>
+							</div>							
+							
+							<div class="row">
+								<div class="span TEMP_label">
+									<label>Recommended Protective Action:</label>
+								</div>
+							</div>
+							<div class="row">
+								<div class="span9">
+									<textarea rows="5" cols="72" class="span9 textarea-large instruction" type="text" name="instruction"></textarea>
+								</div>
+							</div>							
+							
+							<div class="row">
+								<div class="span TEMP_label optional">
+									<label>Web URL for more info (optional):</label>
+								</div>
+							</div>
+							<div class="row">
+								<div class="span6">
+									<input class="span6 input-large web" type="text" name="web" size="72"/>
+								</div>
+								<div class="span2">
+									<button class="resourceExpanderHead" type="button" data-index=0>Attach Web File</button>
+								</div>
+							</div>
+
+							<div class="resourceExpanderContent" id="rec0" data-index=0 style="display: none">
+								<div class="row">
+									<div class="span TEMP_label">
+										<label>Resource Description: </label>
+									</div>
+									<div class="span6">
+										<input class="span6 input-large" type="text"name="resource" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="span TEMP_label">
+										URI:
+									</div>
+									<div class="span6">
+										<input class="span6 input-large" type="text" name="uri" />
+									</div>
+								</div>
+							</div>
+							
+							<div class="row">
+								<div class="span TEMP_label">
+									<label>For more information:</label>
+								</div>
+							</div>
+							<div class="row">
+								<div class="span9">
+									<textarea rows="2" cols="72" class="span9 textarea-large contact" type="text" name="contact"></textarea>
+								</div>							
+							</div>							
+						</div>
+
+<!-- 
+						<div id="resourceList0" class="hero">
+							<input type="hidden" name="count" id="count0" value="1" />
+							<div id="resource0" class="resourceEntry">
+								<h4 class="resourceExpanderHead well" id="reh0" data-index=0
+									style="cursor: pointer;">
+									Resource <span class="expanderSign"><i
+										class="icon-plus-sign"></i></span>
+								</h4>
+								<div class="resourceExpanderContent" id="rec0" data-index=0
+									style="display: none">
+									<table>
+										<tr>
+											<td>Resource Description &nbsp</td>
+											<td><input class="input-large" type="text"
+												name="resource" /></td>
+										</tr>
+										<tr>
+											<td>URI &nbsp</td>
+											<td><input class="input-large" type="text" name="uri" /></td>
+										</tr>
+									</table>
+								</div>
+							</div>
+						</div>
+
+						<button data-index=0 class="btn btn-info btn-small arb" type="button">+ Resource block</button>
+		 -->
+				
+					</div>
+				</div>
+			</div>
+			<button onclick="addBlock();return false;"
+				class="btn btn-info btn-small" type="button">+ Information</button>
+			<br />
+			<table>
+				<tr>
+					<td align="left"><button id="backBtn" type="submit"
+							class="btn btn-primary btn-small" name="backMap">Back</button></td>
+					<td align="right"><button id="nextBtn" type="submit"
+							class="btn btn-primary btn-small" name="nextFinish">Next</button></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<!-- Main Containers Div End -->
 </body>
 </html>
