@@ -1,40 +1,4 @@
-'''
-CAP  XML to Python object de/serialization
-
-This code:
-    - serializes a Python object into a CAP XML document
-    - de-serializes a CAP XML document into a Python object
-'''
-
-__author__ = 'Aristide'
-
-import xml.etree.ElementTree as etree
-from xml.etree.ElementTree import ElementTree
-
-class CAP():
-    def __init__( self ):
-        self.tree = ElementTree() # the etree structure
-
-
-    def serialize(self):
-        '''
-        creates a XML string representation of the encapsulated etree
-        '''
-        return etree.tostring(self.tree.getroot())
-
-
-    def parse(self, xmlString):
-        '''
-        processes XML string into the Python object
-        '''
-        tempTree = etree.fromstring(xmlString)
-        print tempTree
-        return self
-
-
-def main():
-    test_xml = '''
-    <alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
         <identifier>KSTO1055887203</identifier>
         <sender>KSTO@NWS.NOAA.GOV</sender>
         <sent>2003-06-17T14:57:00-07:00</sent>
@@ -80,15 +44,3 @@ def main():
             </area>
         </info>
     </alert>
-    '''
-
-    print test_xml
-
-    capObj = CAP()
-
-    parsed = capObj.parse(test_xml)
-
-    print parsed
-    
-if __name__ == '__main__':
-    main()
