@@ -33,16 +33,16 @@ def add_child(parent, attr, name, call=lambda x: x):
         parent.append(tmp)
 
 
-def add_attribute(elem, attr, name, call=lambda x: x):
+def add_attribute(element_, attr, name, call=lambda x: x):
     """
     Helper method to add attribute if not None
     """
     if attr is not None:
-        elem.attrib[name] = call(attr)
+        element_.attrib[name] = call(attr)
 
 
-def stringify(elem, is_formatted=True):
+def stringify(element_, is_formatted=True):
     """
     Helper method to print the xml string representation of the element
     """
-    return etree.tostring(elem, pretty_print=is_formatted)
+    return etree.tostring(element_, pretty_print=is_formatted)

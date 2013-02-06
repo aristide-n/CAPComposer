@@ -10,13 +10,13 @@ Element Tree, which then can be serialized to XML.
 
 class Alert:
     def __init__(self):
-        self.identifier = None
-        self.sender = None
-        self.sent = None
-        self.status = None
-        self.msg_type = None
-        self.scope = None
-        self.info = None
+        self._identifier = None
+        self._sender = None
+        self._sent = None
+        self._status = None
+        self._msg_type = None
+        self._scope = None
+        self._info = None
 
     def add_info(self,info_obj):
         None
@@ -27,12 +27,12 @@ class Alert:
         """
         alert = element('alert')
 
-        add_child(alert, self.identifier, 'identifier')
-        add_child(alert, self.sender, 'sender')
-        add_child(alert, self.sent, 'sent')
-        add_child(alert, self.status, 'status')
-        add_child(alert, self.msg_type, 'msgType')
-        add_child(alert, self.scope, 'scope')
+        add_child(alert, self._identifier, 'identifier')
+        add_child(alert, self._sender, 'sender')
+        add_child(alert, self._sent, 'sent')
+        add_child(alert, self._status, 'status')
+        add_child(alert, self._msg_type, 'msgType')
+        add_child(alert, self._scope, 'scope')
 
         return alert
 
