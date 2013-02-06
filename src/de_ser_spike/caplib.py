@@ -2,7 +2,7 @@ __author__ = 'Aristide'
 __version__ = '0.1'
 
 
-from xmlutil import element, addChild, stringify
+from xmlutil import *
 
 """This is a thin CAP specific API on top  of lxml. It allows intuitive insertion of alert data into the Alert object's
 Element Tree, which then can be serialized to XML.
@@ -27,12 +27,12 @@ class Alert:
         """
         alert = element('alert')
 
-        addChild(alert, self.identifier, 'identifier')
-        addChild(alert, self.sender, 'sender')
-        addChild(alert, self.sent, 'sent')
-        addChild(alert, self.status, 'status')
-        addChild(alert, self.msg_type, 'msgType')
-        addChild(alert, self.scope, 'scope')
+        add_child(alert, self.identifier, 'identifier')
+        add_child(alert, self.sender, 'sender')
+        add_child(alert, self.sent, 'sent')
+        add_child(alert, self.status, 'status')
+        add_child(alert, self.msg_type, 'msgType')
+        add_child(alert, self.scope, 'scope')
 
         return alert
 

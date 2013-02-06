@@ -1,4 +1,5 @@
 __author__ = 'Aristide'
+__all__ = ['element', 'add_child', 'stringify']
 
 """
 XML namespace definitions
@@ -22,7 +23,7 @@ def element(name):
     return etree.Element(name, nsmap=NSMAP)
 
 
-def addChild(parent, attr, name, call=lambda x: x):
+def add_child(parent, attr, name, call=lambda x: x):
     """
     Helper method to add child if not None
     """
@@ -32,12 +33,13 @@ def addChild(parent, attr, name, call=lambda x: x):
         parent.append(tmp)
 
 
-def addAttribute(elem, attr, name, call=lambda x: x):
+def add_attribute(elem, attr, name, call=lambda x: x):
     """
     Helper method to add attribute if not None
     """
     if attr is not None:
         elem.attrib[name] = call(attr)
+
 
 def stringify(elem, is_formatted=True):
     """
