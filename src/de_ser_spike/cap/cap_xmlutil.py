@@ -20,7 +20,7 @@ NSMAP = {None: CAP_NAMESPACE}
 Some utility functions for lxml operations
 """
 
-def element(name):
+def create_element(name):
     """
     Create an element in the CAP namespace
     """
@@ -32,17 +32,17 @@ def add_child(parent, text, name, call=lambda x: x):
     Helper method to add a child if text is not None
     """
     if text is not None:
-        tmp = element(name)
+        tmp = create_element(name)
         tmp.text = call(text)
         parent.append(tmp)
 
 
-def add_attribute(element_, attr, name, call=lambda x: x):
+def add_attribute(element, attribute, name, call=lambda x: x):
     """
     Helper method to add an attribute if attr is not None
     """
-    if attr is not None:
-        element_.attrib[name] = call(attr)
+    if attribute is not None:
+        element.attrib[name] = call(attribute)
 
 
 def stringify(element_, is_formatted=True):
@@ -52,4 +52,4 @@ def stringify(element_, is_formatted=True):
     return etree.tostring(element_, pretty_print=is_formatted)
 
 
-__all__ = ['element', 'add_child', 'add_attribute', 'stringify']
+__all__ = ['create_element', 'add_child', 'add_attribute', 'stringify']
