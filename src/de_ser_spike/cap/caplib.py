@@ -53,6 +53,9 @@ class Alert(object):
 
 
     def add_info(self,info_obj):
+        """
+        TODO: think about how to use cap_xmlutil to append the element
+        """
         NotImplemented
 
 

@@ -17,7 +17,7 @@ CAP_NAMESPACE = 'urn:oasis:names:tc:emergency:cap:{}'.format(CAP_SCHEMA_VERSION)
 NSMAP = {None: CAP_NAMESPACE}
 
 """
-Some utility functions for xml operations
+Some utility functions for lxml operations
 """
 
 def element(name):
