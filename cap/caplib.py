@@ -65,7 +65,7 @@ class Alert(object):
         Convert this alert to element tree format. Return the top element of this `Alert`
         """
         alert = create_element('alert')
-        self._sent = datetime.now()
+        self._sent = str(datetime.now())
 
         add_child(alert, self._identifier, 'identifier')
         add_child(alert, self._sender, 'sender')
