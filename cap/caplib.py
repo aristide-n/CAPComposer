@@ -66,7 +66,7 @@ class Alert(object):
         Convert this alert to element tree format. Return the top element of this `Alert`
         """
         alert = create_element('alert')
-        self._sent = datetime(2007, 5, 4, 18, 13, 51, 0, pytz.utc).isoformat()
+        self._sent = datetime.now(pytz.utc).isoformat()
 
         add_child(alert, self._identifier, 'identifier')
         add_child(alert, self._sender, 'sender')
