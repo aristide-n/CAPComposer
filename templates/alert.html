@@ -17,10 +17,10 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="#">CAP Composer</a>
+          <a class="brand" href="alert.html">CAP Composer</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li class="active"><a href="#">Home</a></li>
+              <li class="active"><a href="alert.html">Home</a></li>
               <li><a href="#about">About</a></li>
               <li><a href="#contact">Contact</a></li>
             </ul>
@@ -85,7 +85,7 @@
     		$("#messageType").val(alertJSON.messageType); 
     		$("#source").val(alertJSON.source); 
     		$("#scope").val(alertJSON.scope); 
-    		$("#code").val(alertJSON.code); 
+{#    		$("#code").val(alertJSON.code); #}
     		$("#addressInput").val(alertJSON.addressInput); 
     		$("#restrictionInput").val(alertJSON.restrictionInput); 
     	}
@@ -109,7 +109,7 @@
               <tr id="scoper"><td>Scope</td><td><select name="scope" id="scope" onchange="checkScope()"><option>Public</option><option>Restricted</option><option>Private</option></select></td></tr>
               <tr id="restricted"></tr>
               <tr id="address"></tr>
-              <tr><td>Code</td><td><input class="input-large" type="text" name="code" id="code"/></td></tr>
+{#            <tr><td>Code</td><td><input class="input-large" type="text" name="code" id="code"/></td></tr>#}
               <tr><td></td><td align="right"><button type="submit" name="nextMap">Next</button></td></tr>
               </table>
               </form>
