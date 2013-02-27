@@ -6,7 +6,8 @@ from cap.cap_xmlutil import create_element, add_child, stringify
 from uuid import uuid4
 from datetime import datetime
 from pytz.gae import pytz
-"""This module is the collection of classes that represent the CAP 1.2 data dictionary:
+
+"""This module is the collection of classes that represent the CAP 1.2 XML schema:
 http://docs.oasis-open.org/emergency/cap/v1.2/CAP-v1.2-os.html
 """
 
