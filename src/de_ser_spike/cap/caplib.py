@@ -4,7 +4,10 @@ __version__ = '1.0'
 
 from cap.cap_xmlutil import create_element, add_child, stringify
 from uuid import uuid4
-"""This module is the collection of classes that represent the CAP 1.2 data dictionary:
+from datetime import datetime
+from pytz.gae import pytz
+
+"""This module is the collection of classes that represent the CAP 1.2 XML schema:
 http://docs.oasis-open.org/emergency/cap/v1.2/CAP-v1.2-os.html
 """
 
@@ -64,10 +67,11 @@ class Alert(object):
         Convert this alert to element tree format. Return the top element of this `Alert`
         """
         alert = create_element('alert')
+        self._sent = datetime.now(pytz.utc).replace(microsecond=0)
 
         add_child(alert, self._identifier, 'identifier')
         add_child(alert, self._sender, 'sender')
-        add_child(alert, self._sent, 'sent')
+        add_child(alert, str(self._sent.isoformat()), 'sent')
         add_child(alert, self._status, 'status')
         add_child(alert, self._msg_type, 'msgType')
         add_child(alert, self._scope, 'scope')
