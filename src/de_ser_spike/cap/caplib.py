@@ -14,6 +14,9 @@ http://docs.oasis-open.org/emergency/cap/v1.2/CAP-v1.2-os.html
 class Alert(object):
 
     def __init__(self):
+        """
+        Initialize the Alert's hidden attributes by set their default values
+        """
         self._identifier = str(uuid4())     # Generate a random UUID
         self._sender = ''
         self._sent = ''
@@ -22,7 +25,6 @@ class Alert(object):
         self._scope = None
         self._restriction = ''
         self._addresses = []
-        self._info = None
 
 
     def set_sender(self, value):
@@ -57,28 +59,42 @@ class Alert(object):
     scope = property(fset=set_scope)
 
 
-    def add_info(self,info_obj):
+    def set_restriction(self, value):
         """
-        TODO: think about how to use cap_xmlutil to append the element
+        Writer method for the _restriction attribute
         """
-        NotImplemented
+        self._restriction = value
+    restriction = property(fset=set_restriction)
+
+
+    def set_address(self, value):
+        """
+        Writer method for items of the _addresses attribute
+        """
+        self._addresses.append(value)
+    address = property(fset=set_address)
 
 
     def to_xml_tree(self):
         """
-        Convert this alert to element tree format. Return the top element of the Alert tree
+        Convert this alert to XML element tree format. Return the top element of the XML tree
         """
+
+        # Check if required attributes are set
         assert (self._sender is not ''), "Alert sender is empty string."
         assert (self._status is not None), "Alert status is None."
         assert (self._msg_type is not None), "Alert message type is None."
         assert (self._scope is not None), "Alert scope is None."
 
+        # At least one address is required for the private scope
         if self._scope is 'Private':
             assert (self._addresses), "Private Alert doesn't have addresses." # Empty list means False
 
+        # A restriction message is required for the restricted scope
         if self._scope is 'Restricted': assert (self._restriction is not ''), \
                                         "Restricted Alert doesn't have restriction."
 
+        # Create the XML tree
         alert = create_element('alert')
         self._sent = datetime.now(pytz.utc).replace(microsecond=0)
 
@@ -99,67 +115,7 @@ class Alert(object):
         try:
             alert_xml = stringify(self.to_xml_tree(), is_formatted)
         except AssertionError:
-            raise
+            print "The CAP Alert is invalid; aborted generating XML."
+            raise # re-raise the exception to give an audit trail to callers of this method.
         else:
             return alert_xml
-
-
-class Info:
-
-    def __init__(self):
-        NotImplemented
-
-
-    def add_area(self, area_obj):
-        NotImplemented
-
-
-    def add_resource(self, resource_obj):
-        NotImplemented
-
-
-
-class Area:
-
-    def __init__(self):
-        NotImplemented
-
-
-    def add_circle(self, circle_obj):
-        NotImplemented
-
-
-    def add_polygon(self, polygon_obj):
-        NotImplemented
-
-
-
-class Circle:
-
-    def __init__(self):
-        NotImplemented
-
-
-
-class Polygon:
-
-    def __init__(self):
-        NotImplemented
-
-
-    def add_point(self, point_obj):
-        NotImplemented
-
-
-
-class Point:
-
-    def __init__(self):
-        NotImplemented
-
-
-
-class Resource:
-
-    def __init__(self):
-        NotImplemented

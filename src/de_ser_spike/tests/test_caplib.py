@@ -17,7 +17,7 @@ class TestCAPLib(TestCase):
 
     def test_invalid_to_xml(self):
         """
-        Try to call to_xml_string for an invalid Alert object
+        Try to call alert.to_xml_string for an invalid alert object
         """
 
         # Empty Alert
@@ -46,10 +46,7 @@ class TestCAPLib(TestCase):
         Compare the string representations of a valid Alert object to the expected xml strings
         """
 
-        #Do all required Public
-        #Do all required private, addresses (check strings)
-        #Do all required restricted, restriction
-        #Do formatted
+        # The reference XML
         valid_xml = '<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">' \
                     '<identifier>id</identifier>' \
                     '<sender>KSTO@NWS.NOAA.GOV</sender>' \
@@ -59,16 +56,29 @@ class TestCAPLib(TestCase):
                     '<scope>Public</scope>' \
                     '</alert>'
 
+        # Set all of alert's required attributes
         self.alert.set_sender('KSTO@NWS.NOAA.GOV')
         self.alert.set_status('Actual')
         self.alert.set_msg_type('Alert')
         self.alert.set_scope('Public')
+
+        # Get the XML string representation
         alert_xml = self.alert.to_xml_string(is_formatted=False)
 
+        # Put the alert's XML through beautiful soup to make the "sent" time and "identifier" values the same as
+        # the reference XML
         alert_soup = BeautifulSoup(alert_xml)
 
         alert_soup.identifier.string = 'id'
         alert_soup.sent.string = 'time'
+
+        # Beautiful soup makes the "msgType" tag all lowercase. Restore it to the canonical form
         alert_soup.msgtype.name = 'msgType'
+
+        # Compare the strings
         assert_equal(str(alert_soup), valid_xml)
 
+
+        #TODO: Test all required attr for 'Private' scope, i.e add addresses
+        #TODO: Test all required attr for 'Restricted' scope, i.e add restriction
+        #TODO: Test formatted output
