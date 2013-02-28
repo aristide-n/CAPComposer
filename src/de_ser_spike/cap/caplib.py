@@ -20,6 +20,8 @@ class Alert(object):
         self._status = None
         self._msg_type = None
         self._scope = None
+        self._restriction = ''
+        self._addresses = []
         self._info = None
 
 
@@ -64,8 +66,19 @@ class Alert(object):
 
     def to_xml_tree(self):
         """
-        Convert this alert to element tree format. Return the top element of this `Alert`
+        Convert this alert to element tree format. Return the top element of the Alert tree
         """
+        assert (self._sender is not ''), "Alert sender is empty string."
+        assert (self._status is not None), "Alert status is None."
+        assert (self._msg_type is not None), "Alert message type is None."
+        assert (self._scope is not None), "Alert scope is None."
+
+        if self._scope is 'Private':
+            assert (self._addresses), "Private Alert doesn't have addresses." # Empty list means False
+
+        if self._scope is 'Restricted': assert (self._restriction is not ''), \
+                                        "Restricted Alert doesn't have restriction."
+
         alert = create_element('alert')
         self._sent = datetime.now(pytz.utc).replace(microsecond=0)
 
@@ -79,12 +92,16 @@ class Alert(object):
         return alert
 
 
-    def to_xml_string(self):
+    def to_xml_string(self, is_formatted=True):
         """
         Convert this alert to xml string format. Return the formatted xml string
         """
-        return stringify(self.to_xml_tree())
-
+        try:
+            alert_xml = stringify(self.to_xml_tree(), is_formatted)
+        except AssertionError:
+            raise
+        else:
+            return alert_xml
 
 
 class Info:
