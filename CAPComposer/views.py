@@ -8,16 +8,15 @@ def alert(request):
     return render(request, 'alert.html')
 
 def map(request):
+    capMsg.sender = request.POST['source']
+    capMsg.status = request.POST['messageStatus']
+    capMsg.msg_type = request.POST['messageType']
+    capMsg.scope = request.POST['scope']
 
-    cap_sender  = request.POST['source']
-    cap_status  = request.POST['messageStatus']
-    cap_msgType  = request.POST['messageType']
-    cap_scope = request.POST['scope']
-
-    capMsg.sender = cap_sender
-    capMsg.status = cap_status
-    capMsg.msg_type = cap_msgType
-    capMsg.scope = cap_scope
+    if (capMsg._scope == 'Restricted'):
+        capMsg.restriction = request.POST['restrictedText']
+    elif(request.POST['scope'] == 'Private'):
+        capMsg.address = request.POST['address']
 
     return render(request, 'map.html')
 
@@ -25,6 +24,9 @@ def info(request):
     return render(request, 'info.html')
 
 def finish(request):
-    cap_xml = capMsg.to_xml_string()
+    try:
+        result = capMsg.to_xml_string()
+    except AssertionError as ex:
+        result = ex.message
 
-    return render(request, 'finish.html', {'xml': cap_xml})
+    return render(request, 'finish.html', {'result': result})

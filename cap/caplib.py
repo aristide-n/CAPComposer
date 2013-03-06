@@ -57,10 +57,27 @@ class Alert(object):
     scope = property(fset=set_scope)
 
 
+    def set_restriction(self, value):
+        """
+        Writer method for the _restriction attribute
+        """
+        self._restriction = value
+    restriction = property(fset=set_restriction)
+
+
+    #TODO: refactor for multiple addresses
+    def set_address(self, value):
+        """
+        Writer method for the _restriction attribute
+        """
+        self._addresses.append(value)
+    address = property(fset=set_address)
+
+
     def add_info(self,info_obj):
         """
-        TODO: think about how to use cap_xmlutil to append the element
         """
+        #TODO: think about how to use cap_xmlutil to append the element
         NotImplemented
 
 
@@ -68,16 +85,15 @@ class Alert(object):
         """
         Convert this alert to element tree format. Return the top element of the Alert tree
         """
-        assert (self._sender is not ''), "Alert sender is empty string."
+        assert (self._sender not in ['', None]), "Alert sender is empty string."
         assert (self._status is not None), "Alert status is None."
         assert (self._msg_type is not None), "Alert message type is None."
         assert (self._scope is not None), "Alert scope is None."
 
-        if self._scope is 'Private':
-            assert (self._addresses), "Private Alert doesn't have addresses." # Empty list means False
-
-        if self._scope is 'Restricted': assert (self._restriction is not ''), \
-            "Restricted Alert doesn't have restriction."
+        if self._scope == 'Restricted':
+            assert (self._restriction not in ['', None]), "Restricted Alert doesn't have restriction."
+        if self._scope == 'Private':
+            assert (any(self._addresses)), "Private Alert doesn't have addresses."
 
         alert = create_element('alert')
         self._sent = datetime.now(pytz.utc).replace(microsecond=0)
@@ -88,6 +104,9 @@ class Alert(object):
         add_child(alert, self._status, 'status')
         add_child(alert, self._msg_type, 'msgType')
         add_child(alert, self._scope, 'scope')
+        if self._scope == 'Restricted': add_child(alert, self._restriction, 'restriction')
+        if self._scope == 'Private': add_child(alert, self._addresses.pop(), 'addresses')
+
 
         return alert
 
