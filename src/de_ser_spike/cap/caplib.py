@@ -91,7 +91,7 @@ class Alert(object):
             assert (self._addresses), "Private Alert doesn't have addresses." # Empty list means False
 
         # A restriction message is required for the restricted scope
-        if self._scope is 'Restricted': assert (self._restriction is not ''), \
+        if self._scope is 'Restricted': assert  (self._restriction is not ''),
                                         "Restricted Alert doesn't have restriction."
 
         # Create the XML tree

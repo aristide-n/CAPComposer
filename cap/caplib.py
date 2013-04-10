@@ -14,6 +14,9 @@ http://docs.oasis-open.org/emergency/cap/v1.2/CAP-v1.2-os.html
 class Alert(object):
 
     def __init__(self):
+        """
+        Initialize the Alert's hidden attributes by set their default values
+        """
         self._identifier = str(uuid4())     # Generate a random UUID
         self._sender = ''
         self._sent = ''
@@ -74,27 +77,33 @@ class Alert(object):
     address = property(fset=set_address)
 
 
-    def add_info(self,info_obj):
+    def add_info(self,info_tree):
         """
         """
         #TODO: think about how to use cap_xmlutil to append the element
-        NotImplemented
+        self._info = info_tree
 
 
     def to_xml_tree(self):
         """
         Convert this alert to element tree format. Return the top element of the Alert tree
         """
+
+        # Check if required attributes are set
         assert (self._sender not in ['', None]), "Alert sender is empty string."
         assert (self._status is not None), "Alert status is None."
         assert (self._msg_type is not None), "Alert message type is None."
         assert (self._scope is not None), "Alert scope is None."
 
+        # A restriction message is required for the restricted scope
         if self._scope == 'Restricted':
             assert (self._restriction not in ['', None]), "Restricted Alert doesn't have restriction."
+
+        # At least one address is required for the private scope
         if self._scope == 'Private':
             assert (any(self._addresses)), "Private Alert doesn't have addresses."
 
+        # Create the XML tree
         alert = create_element('alert')
         self._sent = datetime.now(pytz.utc).replace(microsecond=0)
 
@@ -106,7 +115,7 @@ class Alert(object):
         add_child(alert, self._scope, 'scope')
         if self._scope == 'Restricted': add_child(alert, self._restriction, 'restriction')
         if self._scope == 'Private': add_child(alert, self._addresses.pop(), 'addresses')
-
+        if self._info: alert.append(self._info)
 
         return alert
 
@@ -118,7 +127,7 @@ class Alert(object):
         try:
             alert_xml = stringify(self.to_xml_tree(), is_formatted)
         except AssertionError:
-            raise
+            raise # re-raise the exception to give an audit trail to callers of this method.
         else:
             return alert_xml
 
@@ -126,7 +135,27 @@ class Alert(object):
 class Info:
 
     def __init__(self):
-        NotImplemented
+        self._urgency = ''
+        self._severity = ''
+        self._certainty = ''
+        self._category = ''
+        self._response_type = ''
+        self._language = ''
+        self._event = ''
+        self._sender_name = ''
+        self._headline = ''
+        self._description = ''
+        self._instruction = ''
+        self._web = ''
+        self._contact = ''
+        self._event_code = ''
+
+        # self
+
+
+    def set_urgency(self, value):
+        self._urgency = value
+    urgency = property(fset=set_urgency)
 
 
     def add_area(self, area_obj):
@@ -136,6 +165,36 @@ class Info:
     def add_resource(self, resource_obj):
         NotImplemented
 
+
+    def to_xml_tree(self):
+        info = create_element('info')
+
+
+        add_child(info, self._language, 'language')
+        add_child(info, self._category, 'category')
+        add_child(info, self._event, 'event')
+        add_child(info, self._response_type, 'responseType')
+        add_child(info, self._urgency, 'urgency')
+        add_child(info, self._severity, 'severity')
+        add_child(info, self._certainty, 'certainty')
+
+        event_code_text = self._event_code.split(':')
+        event_code = create_element('eventCode')
+        add_child(event_code, event_code_text[0], 'valueName')
+        add_child(event_code, event_code_text[1], 'value')
+
+        info.append(event_code)
+
+        add_child(info, self._sender_name, 'senderName')
+        add_child(info, self._headline, 'headline')
+        add_child(info, self._description, 'description')
+        add_child(info, self._instruction, 'instruction')
+        add_child(info, self._web, 'web')
+        add_child(info, self._contact, 'contact')
+
+
+
+        return info
 
 
 class Area:
