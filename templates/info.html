@@ -190,11 +190,14 @@ div				{	padding: 10px;
 					<h4 class="expanderHead well" id="eh0" data-index=0
 						style="cursor: pointer;">
 						Information 1
-						<script></script>
 						<span class="expanderSign"><i class="icon-plus-sign"></i></span>
 					</h4>
 					<div class="expanderContent" id="ec0" data-index=0>
-						<div id="hearderFields" class="info_header">
+                        {#Invisible Map fields#}
+                        <input type="hidden" name="circleAreas" id="circleAreas">
+                        <input type="hidden" name="polygonAreas" id="polygonAreas">
+
+                        <div id="hearderFields" class="info_header">
 								
 							<div class="row">
 								<div class="span TEMP_label">
@@ -316,13 +319,13 @@ div				{	padding: 10px;
 								<div class="span6">
 									<input class="span6 input-large event" type="text" name="event" size="60"/>
 								</div>
-								<div class="span TEMP_label optional">
-									<label>Code (opt.):</label>
-								</div>
-								<div class="span2">
-									<input class="span2 input-large eventCode" type="text" name="eventCode" size="8"
-                                           placeholder="name:code"/>
-								</div>
+{#								<div class="span TEMP_label optional">#}
+{#									<label>Code (opt.):</label>#}
+{#								</div>#}
+{#								<div class="span2">#}
+{#									<input class="span2 input-large eventCode" type="text" name="eventCode" size="8"#}
+{#                                           placeholder="name:code"/>#}
+{#								</div>#}
 							</div>
 							
 							<div class="row">

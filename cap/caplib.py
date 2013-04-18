@@ -1,7 +1,6 @@
 __author__ = 'Aristide'
 __version__ = '1.0'
 
-
 from cap.cap_xmlutil import create_element, add_child, stringify
 from uuid import uuid4
 from datetime import datetime
@@ -11,8 +10,8 @@ from pytz.gae import pytz
 http://docs.oasis-open.org/emergency/cap/v1.2/CAP-v1.2-os.html
 """
 
-class Alert(object):
 
+class Alert(object):
     def __init__(self):
         """
         Initialize the Alert's hidden attributes by set their default values
@@ -33,6 +32,7 @@ class Alert(object):
         Writer method for the _sender attribute
         """
         self._sender = value
+
     sender = property(fset=set_sender)
 
 
@@ -41,6 +41,7 @@ class Alert(object):
         Writer method for the _status attribute
         """
         self._status = value
+
     status = property(fset=set_status)
 
 
@@ -49,6 +50,7 @@ class Alert(object):
         Writer method for the _msg_type attribute
         """
         self._msg_type = value
+
     msg_type = property(fset=set_msg_type)
 
 
@@ -57,6 +59,7 @@ class Alert(object):
         Writer method for the _scope attribute
         """
         self._scope = value
+
     scope = property(fset=set_scope)
 
 
@@ -65,6 +68,7 @@ class Alert(object):
         Writer method for the _restriction attribute
         """
         self._restriction = value
+
     restriction = property(fset=set_restriction)
 
 
@@ -74,10 +78,11 @@ class Alert(object):
         Writer method for the _restriction attribute
         """
         self._addresses.append(value)
+
     address = property(fset=set_address)
 
 
-    def add_info(self,info_tree):
+    def add_info(self, info_tree):
         """
         """
         #TODO: think about how to use cap_xmlutil to append the element
@@ -115,7 +120,7 @@ class Alert(object):
         add_child(alert, self._scope, 'scope')
         if self._scope == 'Restricted': add_child(alert, self._restriction, 'restriction')
         if self._scope == 'Private': add_child(alert, self._addresses.pop(), 'addresses')
-        if self._info: alert.append(self._info)
+        if self._info is not None: alert.append(self._info)
 
         return alert
 
@@ -133,7 +138,6 @@ class Alert(object):
 
 
 class Info:
-
     def __init__(self):
         self._urgency = ''
         self._severity = ''
@@ -148,18 +152,18 @@ class Info:
         self._instruction = ''
         self._web = ''
         self._contact = ''
-        self._event_code = ''
-
-        # self
+        self._event_code = None
+        self._area = None
 
 
     def set_urgency(self, value):
         self._urgency = value
+
     urgency = property(fset=set_urgency)
 
 
-    def add_area(self, area_obj):
-        NotImplemented
+    def add_area(self, area_tree):
+        self._area = area_tree
 
 
     def add_resource(self, resource_obj):
@@ -169,7 +173,6 @@ class Info:
     def to_xml_tree(self):
         info = create_element('info')
 
-
         add_child(info, self._language, 'language')
         add_child(info, self._category, 'category')
         add_child(info, self._event, 'event')
@@ -178,12 +181,13 @@ class Info:
         add_child(info, self._severity, 'severity')
         add_child(info, self._certainty, 'certainty')
 
-        event_code_text = self._event_code.split(':')
-        event_code = create_element('eventCode')
-        add_child(event_code, event_code_text[0], 'valueName')
-        add_child(event_code, event_code_text[1], 'value')
+        if self._event_code:
+            event_code_text = self._event_code.split(':')
+            event_code = create_element('eventCode')
+            add_child(event_code, event_code_text[0], 'valueName')
+            add_child(event_code, event_code_text[1], 'value')
 
-        info.append(event_code)
+            info.append(event_code)
 
         add_child(info, self._sender_name, 'senderName')
         add_child(info, self._headline, 'headline')
@@ -192,35 +196,78 @@ class Info:
         add_child(info, self._web, 'web')
         add_child(info, self._contact, 'contact')
 
-
+        if self._area is not None: info.append(self._area)
 
         return info
 
 
 class Area:
-
     def __init__(self):
-        NotImplemented
+        self._area_description = ''
+        self._polygons = []
+        self._circles = []
 
 
-    def add_circle(self, circle_obj):
-        NotImplemented
+    def add_multiple_circles(self, circle_points_list):
+        i = 0
+
+        while i < len(circle_points_list):
+            center_lat = circle_points_list[i]
+            center_long = circle_points_list[i + 1]
+            radius = circle_points_list[i + 2]
+
+            # Add the circle
+            self.add_circle(center_lat, center_long, radius)
+
+            # Increment the iterator
+            i += 3
 
 
-    def add_polygon(self, polygon_obj):
-        NotImplemented
+    def add_multiple_polygons(self, polygons_list):
+        for polygon in polygons_list:
+            self.add_polygon(polygon)
 
+
+    def add_circle(self, center_lat, center_long, radius):
+        circle_str = str(center_lat) + ',' + str(center_long) + ' ' + str(radius)
+        self._circles.append(circle_str)
+
+
+    def add_polygon(self, polygon_vertices):
+        polygon_str = str(polygon_vertices[0])
+
+        polygon_vertices.append(polygon_vertices[0])
+        polygon_vertices.append(polygon_vertices[1])
+        polygon_vertices = polygon_vertices[1:]
+
+        for index, vertex in enumerate(polygon_vertices):
+            polygon_str += ',' if ((index %2 == 0)) else ' '
+            polygon_str += str(vertex)
+
+        self._polygons.append(polygon_str)
+
+
+    def to_xml_tree(self):
+        area = create_element('area')
+
+        add_child(area, self._area_description, 'areaDesc')
+        if self._polygons:
+            for polygon in self._polygons:
+                add_child(area, polygon, 'polygon')
+
+        if self._circles:
+            for circle in self._circles:
+                add_child(area, circle, 'circle')
+
+        return area
 
 
 class Circle:
-
     def __init__(self):
         NotImplemented
 
 
-
 class Polygon:
-
     def __init__(self):
         NotImplemented
 
@@ -229,15 +276,11 @@ class Polygon:
         NotImplemented
 
 
-
 class Point:
-
     def __init__(self):
         NotImplemented
 
 
-
 class Resource:
-
     def __init__(self):
         NotImplemented

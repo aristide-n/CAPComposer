@@ -100,7 +100,11 @@
 			</div>
 		</div>
 	</div>
+
 	<script>
+
+{#           TODO: Remove dragged circle leftover marker bug#}
+
 		var map;
 		var geocoder; // = new google.maps.Geocoder();
 		var markers = [];
@@ -377,11 +381,11 @@
                 strokeOpacity : 0.8,
                 strokeWeight : 2,
                 fillColor : "#FF0000",
-                fillOpacity : 0.35,
+                fillOpacity : 0.35
 			});
 			circles.push(circle);
 
-			// Set the distance property value, default to 50km.
+			// Set the distance property value to the initial radius
 			this.set('distance', initialRadius);
 
 			// Bind the RadiusWidget bounds property to the circle bounds property.
@@ -464,7 +468,7 @@
 				return 0;
 			}
 
-			var R = 6371000; // Radius of the Earth in km
+			var R = 6371000; // Radius of the Earth in m
 			var dLat = (p2.lat() - p1.lat()) * Math.PI / 180;
 			var dLon = (p2.lng() - p1.lng()) * Math.PI / 180;
 			var a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
@@ -599,7 +603,9 @@
 				for ( var i = 0; i < circles.length; i++) {
 					serCircles.push(circles[i].getCenter().lat());
 					serCircles.push(circles[i].getCenter().lng());
-					serCircles.push(circles[i].getRadius());
+					serCircles.push(circles[i].getRadius() / 1000);
+                    console.log("Radius: ", circles[i].getRadius() / 1000)
+                    debugger
 				}
 			}
 			return serCircles;
@@ -664,7 +670,7 @@
 				circle = new google.maps.Circle(circleOptions);
 				circle.setCenter(new google.maps.LatLng(circleAreas[i],
 						circleAreas[i + 1]));
-				circle.setRadius(circleAreas[i + 2]);
+				circle.setRadius(circleAreas[i + 2] * 1000);
 				circles.push(circle);
 			}
 		}
