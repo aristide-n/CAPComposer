@@ -168,3 +168,7 @@ pip-log.txt
 .idea
 
 *.sqlite3
+
+# Sublime project files
+*.sublime-project
+*.sublime-workspace

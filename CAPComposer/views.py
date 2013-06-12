@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from cap import caplib
 import json
+import xmlsec
+import os
+from lxml import etree
 
 capMsg = caplib.Alert()
 
@@ -61,8 +64,26 @@ def finish(request):
 
     capMsg.add_info(infoBlock.to_xml_tree())
 
+    #Apply a digital signature
+
+    #Get the private key and the certificate
+    datadir = os.path.abspath('./test/data/x509Files')
+    private_key = os.path.join(datadir, 'test.pem')
+    public_certificate = os.path.join(datadir, 'test.cert')
+
+    #Add the signature and print
+    signed_cap_msg = xmlsec.sign(capMsg.to_xml_tree(),
+                             key_spec=private_key,
+                             cert_spec=public_certificate)
+
+    print etree.tostring(signed_cap_msg, pretty_print=True)
+
+    # Verify and print
+    print xmlsec.verify(signed_cap_msg, public_certificate)
+
     try:
         result = capMsg.to_xml_string()
+        # result = signed_cap_msg.to_xml_string()
     except AssertionError as ex:
         result = ex.message
 
