@@ -66,20 +66,20 @@ def finish(request):
 
     #Apply a digital signature
 
-    #Get the private key and the certificate
-    datadir = os.path.abspath('./test/data/x509Files')
-    private_key = os.path.join(datadir, 'test.pem')
-    public_certificate = os.path.join(datadir, 'test.cert')
+    # #Get the private key and the certificate
+    # datadir = os.path.abspath('./test/data/x509Files')
+    # private_key = os.path.join(datadir, 'test.pem')
+    # public_certificate = os.path.join(datadir, 'test.cert')
 
     #Add the signature and print
-    signed_cap_msg = xmlsec.sign(capMsg.to_xml_tree(),
-                             key_spec=private_key,
-                             cert_spec=public_certificate)
-
-    print etree.tostring(signed_cap_msg, pretty_print=True)
-
-    # Verify and print
-    print xmlsec.verify(signed_cap_msg, public_certificate)
+    # signed_cap_msg = xmlsec.sign(capMsg.to_xml_tree(),
+    #                          key_spec=private_key,
+    #                          cert_spec=public_certificate)
+    #
+    # print etree.tostring(signed_cap_msg, pretty_print=True)
+    #
+    # # Verify and print
+    # print xmlsec.verify(signed_cap_msg, public_certificate)
 
     try:
         result = capMsg.to_xml_string()
@@ -88,3 +88,6 @@ def finish(request):
         result = ex.message
 
     return render(request, 'finish.html', {'result': result})
+
+def cap(request):
+    return render(request, 'cap.html')

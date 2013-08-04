@@ -7,6 +7,7 @@ urlpatterns = patterns('',
     url(r'^map', 'CAPComposer.views.map'),
     url(r'^info', 'CAPComposer.views.info'),
     url(r'^finish', 'CAPComposer.views.finish'),
+    url(r'^cap', 'CAPComposer.views.cap'),
 )
 
 urlpatterns += staticfiles_urlpatterns()

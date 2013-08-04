@@ -5,6 +5,7 @@ from cap.cap_xmlutil import create_element, add_child, stringify
 from uuid import uuid4
 from datetime import datetime
 from pytz.gae import pytz
+import xmlsec
 
 """This module is the collection of classes that represent the CAP 1.2 XML schema:
 http://docs.oasis-open.org/emergency/cap/v1.2/CAP-v1.2-os.html
@@ -25,6 +26,7 @@ class Alert(object):
         self._restriction = ''
         self._addresses = []
         self._info = None
+        self._signature = None
 
 
     def set_sender(self, value):
@@ -121,6 +123,7 @@ class Alert(object):
         if self._scope == 'Restricted': add_child(alert, self._restriction, 'restriction')
         if self._scope == 'Private': add_child(alert, self._addresses.pop(), 'addresses')
         if self._info is not None: alert.append(self._info)
+        if self._signature is not None: alert.append(self._signature)
 
         return alert
 
@@ -135,6 +138,25 @@ class Alert(object):
             raise # re-raise the exception to give an audit trail to callers of this method.
         else:
             return alert_xml
+
+
+    def add_signature(self, private_key_path, public_cert_path):
+        NotImplemented
+        #Verify the key path
+        #Verify the cert path
+        #Make sure that _signature is None
+        #Generate signature with xmlsec
+        #extract the signature from the returned tree,
+        #save it at _signature
+        #return
+
+
+    def verify_signature(self, public_cert_path):
+        NotImplemented
+        #If there is a signature
+        #verify the cert path
+        #verify using xmlsec
+        #and return
 
 
 class Info:
